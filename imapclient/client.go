@@ -725,8 +725,14 @@ func (c *Client) readResponseTagged(tag, typ string) (startTLS *startTLSCommand,
 		if !c.dec.ExpectAtom(&code) {
 			return nil, fmt.Errorf("in resp-text-code: %w", c.dec.Err())
 		}
+		code = strings.ToUpper(code)
 		// TODO: LONGENTRIES and MAXSIZE from METADATA
 		switch code {
+		case "READ-ONLY", "READ-WRITE":
+			if cmd, ok := cmd.(*SelectCommand); ok {
+				readOnly := code == "READ-ONLY"
+				cmd.data.ReadOnly = &readOnly
+			}
 		case "CAPABILITY": // capability-data
 			caps, err := readCapabilities(c.dec)
 			if err != nil {

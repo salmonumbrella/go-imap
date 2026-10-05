@@ -37,6 +37,10 @@ type SeqMatchData struct {
 //
 // In the old RFC 2060, PermanentFlags, UIDNext and UIDValidity are optional.
 type SelectData struct {
+	// ReadOnly is the access mode reported by the tagged SELECT or EXAMINE
+	// response. Nil means the server omitted READ-ONLY and READ-WRITE; it does
+	// not prove write access. False is explicit READ-WRITE evidence.
+	ReadOnly *bool
 	// Flags defined for this mailbox
 	Flags []Flag
 	// Flags that the client can change permanently. Nil means the server
