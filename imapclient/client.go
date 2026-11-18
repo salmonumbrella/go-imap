@@ -767,9 +767,7 @@ func (c *Client) readResponseTagged(tag, typ string) (startTLS *startTLSCommand,
 			case *MoveCommand:
 				// This can happen when Client.Move falls back to COPY +
 				// STORE + EXPUNGE
-				cmd.data.UIDValidity = uidValidity
-				cmd.data.SourceUIDs = srcUIDs
-				cmd.data.DestUIDs = dstUIDs
+				cmd.recordReceipt(uidValidity, srcUIDs, dstUIDs)
 			}
 		case "MODIFIED":
 			var modifiedUIDs imap.UIDSet
@@ -911,9 +909,7 @@ func (c *Client) readResponseData(typ string) error {
 					return fmt.Errorf("in resp-code-copy: %w", err)
 				}
 				if cmd := findPendingCmdByType[*MoveCommand](c); cmd != nil {
-					cmd.data.UIDValidity = uidValidity
-					cmd.data.SourceUIDs = srcUIDs
-					cmd.data.DestUIDs = dstUIDs
+					cmd.recordReceipt(uidValidity, srcUIDs, dstUIDs)
 				}
 			case "HIGHESTMODSEQ":
 				var modSeq uint64
